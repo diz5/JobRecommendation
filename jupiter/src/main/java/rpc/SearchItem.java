@@ -1,14 +1,17 @@
 package rpc;
 
 import java.io.IOException;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+
+import entity.Item;
+import external.GitHubClient;
 
 /**
  * Servlet implementation class SearchItem
@@ -31,15 +34,17 @@ public class SearchItem extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		double lat = Double.parseDouble(request.getParameter("lat"));
+		double lon = Double.parseDouble(request.getParameter("lon"));
+
+		GitHubClient client = new GitHubClient();
+		List<Item> items = client.search(lat, lon, null);
 		JSONArray array = new JSONArray();
-		try {
-			array.put(new JSONObject().put("username", "abcd"));
-			array.put(new JSONObject().put("username", "1234"));
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for(Item item: items) {
+			array.put(item.toJSONObject());
 		}
 		RpcHelper.writeJsonArray(response, array);
+
 	}
 
 	/**
